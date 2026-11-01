@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHUSHU/TONG | Identity Filter</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #e9efff;
+  font-family: Georgia, serif;
+  color: #fff;
+}
+
+.app {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 100dvh;
+  margin: auto;
+  overflow: hidden;
+  background: #b6c9ed;
+}
+
+video, canvas, #result {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+}
+
+video {
+  transform: scaleX(-1);
+}
+
+#result {
+  display: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(30,45,90,.4),
+      transparent 30%,
+      transparent 65%,
+      rgba(30,45,90,.65)
+    );
+}
+
+.header {
+  position: absolute;
+  top: 35px;
+  width: 100%;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+.header h1 {
+  font-size: 23px;
+  margin: 0;
+}
+
+.header p {
+  font-size: 10px;
+  letter-spacing: 4px;
+}
+
+.frame {
+  position: absolute;
+  width: 76%;
+  height: 52%;
+  left: 12%;
+  top: 22%;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 48% 48% 40% 40%;
+  box-shadow: 0 0 35px rgba(225,230,255,.5);
+}
+
+.scanline {
+  display: none;
+  position: absolute;
+  top: 20%;
+  width: 100%;
+  height: 3px;
+  background: #fff;
+  box-shadow: 0 0 25px #fff, 0 0 45px #a2d5ff;
+  animation: scan 2.5s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 20%; }
+  50% { top: 75%; }
+  100% { top: 20%; }
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 25px;
+  color: #fff;
+  animation: glow 2s infinite alternate;
+}
+
+.s1 { top: 20%; left: 8%; }
+.s2 { top: 35%; right: 8%; }
+.s3 { bottom: 25%; left: 15%; }
+
+@keyframes glow {
+  from { opacity: .3; transform: scale(.7); }
+  to { opacity: 1; transform: scale(1.3); }
+}
+
+.bottom {
+  position: absolute;
+  bottom: 35px;
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
+}
+
+button, .upload {
+  border: 1px solid #fff;
+  border-radius: 30px;
+  background: rgba(245,245,255,.9);
+  color: #657db5;
+  padding: 14px 25px;
+  font-family: Georgia, serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  margin: 5px;
+  display: inline-block;
+  font-size: 12px;
+}
+
+button:disabled {
+  opacity: .5;
+}
+
+#status {
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+#upload {
+  display: none;
+}
+
+#saveBtn, #resetBtn {
+  display: none;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flash.active {
+  animation: flash .7s ease-out;
+}
+
+@keyframes flash {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 4px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#message.active {
+  opacity: 1;
+  animation: appear 2s ease-in-out;
+}
+
+@keyframes appear {
+  0% { opacity: 0; transform: scale(.8); }
+  40% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <video id="camera" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+  <img id="result" alt="Virtual character result">
+
+  <div class="overlay"></div>
+
+  <div class="header">
+    <h1>SHUSHU/TONG</h1>
+    <p>EVERY FACE, A DIFFERENT IDENTITY</p>
+  </div>
+
+  <div class="frame" id="frame"></div>
+  <div class="scanline" id="scanline"></div>
+
+  <div class="sparkle s1">✧</div>
+  <div class="sparkle s2">✦</div>
+  <div class="sparkle s3">✧</div>
+
+  <div id="message">NEW IDENTITY</div>
+  <div class="flash" id="flash"></div>
+
+  <div class="bottom">
+    <p id="status">DISCOVER YOUR VIRTUAL SELF</p>
+
+    <label class="upload" for="upload">
+      UPLOAD CHARACTER
+    </label>
+
+    <input
+      type="file"
+      id="upload"
+      accept="image/*"
+    >
+
+    <button id="startBtn">START CAMERA</button>
+    <button id="transformBtn" disabled>TRANSFORM</button>
+    <button id="saveBtn">SAVE IMAGE</button>
+    <button id="resetBtn">TRY AGAIN</button>
+  </div>
+
+</div>
+
+<script>
+const video = document.getElementById("camera");
+const canvas = document.getElementById("canvas");
+const result = document.getElementById("result");
+const statusText = document.getElementById("status");
+const scanline = document.getElementById("scanline");
+const flash = document.getElementById("flash");
+const message = document.getElementById("message");
+
+const startBtn = document.getElementById("startBtn");
+const transformBtn = document.getElementById("transformBtn");
+const saveBtn = document.getElementById("saveBtn");
+const resetBtn = document.getElementById("resetBtn");
+const upload = document.getElementById("upload");
+
+let characterImage = null;
+let stream = null;
+let transforming = false;
+
+startBtn.addEventListener("click", startCamera);
+transformBtn.addEventListener("click", transform);
+saveBtn.addEventListener("click", saveImage);
+resetBtn.addEventListener("click", reset);
+upload.addEventListener("change", uploadCharacter);
+
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: { ideal: 1280 },
+        height: { ideal: 1920 }
+      }
+    });
+
+    video.srcObject = stream;
+    await video.play();
+
+    startBtn.style.display = "none";
+    transformBtn.disabled = false;
+    statusText.textContent = "FACE YOUR CAMERA";
+
+  } catch (error) {
+    statusText.textContent =
+      "CAMERA ACCESS DENIED OR UNAVAILABLE";
+    console.error(error);
+  }
+}
+
+function uploadCharacter(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    statusText.textContent = "PLEASE SELECT AN IMAGE";
+    return;
+  }
+
+  if (characterImage) {
+    URL.revokeObjectURL(characterImage);
+  }
+
+  characterImage = URL.createObjectURL(file);
+  statusText.textContent = "CHARACTER READY";
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function transform() {
+  if (transforming || !stream) return;
+
+  if (!characterImage) {
+    statusText.textContent = "UPLOAD CHARACTER FIRST";
+    return;
+  }
+
+  transforming = true;
+  transformBtn.disabled = true;
+
+  const width = video.videoWidth;
+  const height = video.videoHeight;
+
+  if (!width || !height) {
+    statusText.textContent = "CAMERA NOT READY";
+    transforming = false;
+    transformBtn.disabled = false;
+    return;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+
+  // Capture a mirrored selfie
+  ctx.save();
+  ctx.translate(width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, width, height);
+  ctx.restore();
+
+  statusText.textContent = "SCANNING IDENTITY...";
+  scanline.style.display = "block";
+
+  await wait(1800);
+
+  statusText.textContent = "ENTERING VIRTUAL WORLD...";
+
+  await wait(1400);
+
+  scanline.style.display = "none";
+  flash.classList.add("active");
+
+  await wait(350);
+
+  result.src = characterImage;
+  result.style.display = "block";
+  video.style.display = "none";
+
+  message.classList.add("active");
+
+  statusText.textContent = "IDENTITY UNLOCKED";
+
+  transformBtn.style.display = "none";
+  saveBtn.style.display = "inline-block";
+  resetBtn.style.display = "inline-block";
+
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+
+  await wait(2000);
+  message.classList.remove("active");
+  flash.classList.remove("active");
+  transforming = false;
+}
+
+async function saveImage() {
+  if (!result.src || !characterImage) return;
+
+  try {
+    const image = new Image();
+
+    image.onload = () => {
+      const output = document.createElement("canvas");
+      output.width = image.naturalWidth;
+      output.height = image.naturalHeight;
+
+      output.getContext("2d").drawImage(
+        image, 0, 0
+      );
+
+      output.toBlob(blob => {
+        if (!blob) return;
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "SHUSHUTONG-IDENTITY.png";
+        link.click();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, "image/png");
+    };
+
+    image.src = characterImage;
+
+  } catch (error) {
+    statusText.textContent = "SAVE FAILED";
+    console.error(error);
+  }
+}
+
+async function reset() {
+  result.style.display = "none";
+  video.style.display = "block";
+
+  saveBtn.style.display = "none";
+  resetBtn.style.display = "none";
+  transformBtn.style.display = "inline-block";
+  transformBtn.disabled = true;
+
+  message.classList.remove("active");
+  scanline.style.display = "none";
+
+  statusText.textContent = "RESTARTING CAMERA";
+
+  await startCamera();
+}
+</script>
+
+</body>
+</html>
