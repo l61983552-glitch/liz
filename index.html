@@ -1,448 +1,140 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHUSHU/TONG | Identity Filter</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#ddd9f4"/>
+<title>SHUSHU/TONG — IDENTITY FILTER</title>
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: #e9efff;
-  font-family: Georgia, serif;
-  color: #fff;
-}
-
-.app {
-  position: relative;
-  width: 100%;
-  max-width: 440px;
-  height: 100dvh;
-  margin: auto;
-  overflow: hidden;
-  background: #b6c9ed;
-}
-
-video, canvas, #result {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  top: 0;
-  left: 0;
-}
-
-video {
-  transform: scaleX(-1);
-}
-
-#result {
-  display: none;
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(30,45,90,.4),
-      transparent 30%,
-      transparent 65%,
-      rgba(30,45,90,.65)
-    );
-}
-
-.header {
-  position: absolute;
-  top: 35px;
-  width: 100%;
-  text-align: center;
-  letter-spacing: 3px;
-}
-
-.header h1 {
-  font-size: 23px;
-  margin: 0;
-}
-
-.header p {
-  font-size: 10px;
-  letter-spacing: 4px;
-}
-
-.frame {
-  position: absolute;
-  width: 76%;
-  height: 52%;
-  left: 12%;
-  top: 22%;
-  border: 1px solid rgba(255,255,255,.65);
-  border-radius: 48% 48% 40% 40%;
-  box-shadow: 0 0 35px rgba(225,230,255,.5);
-}
-
-.scanline {
-  display: none;
-  position: absolute;
-  top: 20%;
-  width: 100%;
-  height: 3px;
-  background: #fff;
-  box-shadow: 0 0 25px #fff, 0 0 45px #a2d5ff;
-  animation: scan 2.5s linear infinite;
-}
-
-@keyframes scan {
-  0% { top: 20%; }
-  50% { top: 75%; }
-  100% { top: 20%; }
-}
-
-.sparkle {
-  position: absolute;
-  font-size: 25px;
-  color: #fff;
-  animation: glow 2s infinite alternate;
-}
-
-.s1 { top: 20%; left: 8%; }
-.s2 { top: 35%; right: 8%; }
-.s3 { bottom: 25%; left: 15%; }
-
-@keyframes glow {
-  from { opacity: .3; transform: scale(.7); }
-  to { opacity: 1; transform: scale(1.3); }
-}
-
-.bottom {
-  position: absolute;
-  bottom: 35px;
-  width: 100%;
-  text-align: center;
-  padding: 0 20px;
-}
-
-button, .upload {
-  border: 1px solid #fff;
-  border-radius: 30px;
-  background: rgba(245,245,255,.9);
-  color: #657db5;
-  padding: 14px 25px;
-  font-family: Georgia, serif;
-  letter-spacing: 2px;
-  cursor: pointer;
-  margin: 5px;
-  display: inline-block;
-  font-size: 12px;
-}
-
-button:disabled {
-  opacity: .5;
-}
-
-#status {
-  font-size: 12px;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-}
-
-#upload {
-  display: none;
-}
-
-#saveBtn, #resetBtn {
-  display: none;
-}
-
-.flash {
-  position: absolute;
-  inset: 0;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.flash.active {
-  animation: flash .7s ease-out;
-}
-
-@keyframes flash {
-  0% { opacity: 0; }
-  30% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-#message {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  text-align: center;
-  font-size: 24px;
-  letter-spacing: 4px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-#message.active {
-  opacity: 1;
-  animation: appear 2s ease-in-out;
-}
-
-@keyframes appear {
-  0% { opacity: 0; transform: scale(.8); }
-  40% { opacity: 1; transform: scale(1.1); }
-  100% { opacity: 0; transform: scale(1); }
-}
+:root{--ink:#58456c;--pale:#ebe6ff;--blue:#b5c6ff;--line:#fff9;--gold:#eee0b9}
+*{box-sizing:border-box}body{margin:0;background:#d3cce9;color:#fff;font-family:Georgia,'Times New Roman',serif}
+.app{position:relative;isolation:isolate;max-width:500px;margin:0 auto;min-height:100dvh;padding:24px 17px 22px;overflow:hidden;background:radial-gradient(ellipse at 65% 10%,#fff9,transparent 35%),linear-gradient(160deg,#9b9dc9,#dad5f2 35%,#adc1eb 73%,#777baa)}
+.app[data-look="pink"]{background:radial-gradient(ellipse at 65% 10%,#fff8,transparent 38%),linear-gradient(155deg,#bb9dba,#e6cbdc 38%,#c6adbe 75%,#746079)}
+.app::before{content:"";pointer-events:none;position:absolute;inset:12px;border:1px solid #fffe;border-radius:20px;box-shadow:inset 0 0 0 5px #fffc,inset 0 0 20px #fff8}
+.app::after{content:"✧ ✦ ✧";pointer-events:none;position:absolute;left:0;right:0;top:113px;text-align:center;font-size:23px;letter-spacing:100px;color:#ffef}
+.brand{text-align:center;position:relative;z-index:3;padding:10px 0 2px}.brand h1{margin:0;font:italic 900 clamp(25px,8vw,38px) Arial,Helvetica,sans-serif;letter-spacing:-2.5px;color:#da2138;text-shadow:0 1px #fff,1px 2px #f4c2c9}
+.brand p{margin:5px 0 0;font:10px Georgia,serif;letter-spacing:3px;color:#fff;text-shadow:0 1px 5px #575381}
+.rune{text-align:center;color:#fff;font-size:22px;margin:7px 0 2px;text-shadow:0 0 7px white}
+.look-switch{display:flex;gap:12px;justify-content:center;position:relative;z-index:2;margin:8px auto 12px}.look-switch button{border:1px solid #fff;box-shadow:0 2px 11px #47406d4a,inset 0 0 12px #fff7;border-radius:30px;color:#544e74;background:#fffc;padding:9px 19px;font-family:Georgia;letter-spacing:1px}.look-switch button[aria-pressed="true"]{color:#fff;background:#7e709f}
+.stage{position:relative;z-index:1;width:100%;aspect-ratio:10/15.5;min-height:360px;max-height:66dvh;background:#c3bcd188;border:7px double #fffbe5;border-radius:47% 47% 14% 14% / 11% 11% 5% 5%;overflow:hidden;box-shadow:0 15px 45px #58506b77,inset 0 0 28px #fff9}
+.stage::before{content:"";position:absolute;z-index:2;inset:8px;border:1px solid #ffeccd96;border-radius:inherit;pointer-events:none}
+#camera,#preview,#result{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;display:none}
+#camera{transform:scaleX(-1)}
+.placeholder{height:100%;display:grid;place-content:center;text-align:center;background:radial-gradient(ellipse at center,#e8ecff,#949cbf);color:#fff;text-shadow:0 1px 8px #484973}
+.placeholder .diamond{font-size:66px;animation:pulse 2.4s ease-in-out infinite}.placeholder p{font-size:11px;letter-spacing:2px;margin-top:0}
+@keyframes pulse{50%{opacity:.5;transform:scale(1.15)}}
+.scanline{display:none;position:absolute;z-index:6;left:5%;width:90%;height:3px;background:#fff;box-shadow:0 0 19px 7px #b0daff;animation:scan 2.3s linear infinite}
+@keyframes scan{0%{top:12%}50%{top:83%}100%{top:12%}}
+.inventory{position:absolute;z-index:4;right:2%;top:24%;width:23%;display:grid;gap:5px;pointer-events:none}
+.inventory img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px;border:2px ridge #ffebd0;box-shadow:0 0 6px #fff,inset 0 0 5px #fff;background:#f5dcf0aa}
+.star{position:absolute;z-index:3;color:white;font-size:24px;text-shadow:0 0 8px white;pointer-events:none}.star.one{top:16%;left:5%}.star.two{bottom:12%;right:6%}
+.status{position:absolute;z-index:5;bottom:14px;left:10%;width:80%;padding:9px 10px;text-align:center;font-size:10px;letter-spacing:2px;color:#fff;background:#5951788f;border:1px solid #fff8;border-radius:20px;text-shadow:0 1px 3px #333}
+.actions{position:relative;z-index:3;text-align:center;margin-top:13px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px}
+.action{border:1px solid #fff9;box-shadow:0 3px 12px #66587955,inset 0 0 10px #fff5;border-radius:25px;padding:12px 16px;font-size:11px;letter-spacing:1.3px;color:#645674;background:#fffdf8ee;font-family:Georgia,serif;cursor:pointer}
+.action.primary{background:linear-gradient(130deg,#f3e3ff,#e1d9ff);font-weight:bold;color:#674271}.action:disabled{opacity:.4;cursor:not-allowed}
+.details{position:relative;z-index:3;margin-top:14px;text-align:center;font:12px/1.5 Arial,sans-serif;color:#fff}.details label{display:inline-flex;align-items:center;gap:7px}.details input{accent-color:#7965b3}
+.details p{margin:7px auto 0;max-width:360px;opacity:.9;font-size:10px}
+.pass{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;margin:10px auto 0}.pass input{max-width:220px;width:64%;padding:9px 13px;border:1px solid #fff9;border-radius:20px;background:#fffe;color:#625377;text-align:center;font:12px Arial;outline:none}
+.small{font:11px Arial,sans-serif;color:#fffd;position:relative;z-index:3;text-align:center;margin:9px 0}
+#filePicker{display:none}.error{color:#fff0ee;text-shadow:0 1px 3px #8b1f37}
+[hidden]{display:none!important}
+@media(min-height:900px){.app{padding-top:34px}.stage{max-height:67dvh}}
 </style>
 </head>
-
 <body>
-
-<div class="app">
-
-  <video id="camera" autoplay playsinline muted></video>
-  <canvas id="canvas"></canvas>
-  <img id="result" alt="Virtual character result">
-
-  <div class="overlay"></div>
-
-  <div class="header">
-    <h1>SHUSHU/TONG</h1>
-    <p>EVERY FACE, A DIFFERENT IDENTITY</p>
+<main class="app" id="app" data-look="pink">
+  <header class="brand"><h1>SHUSHU/TONG</h1><p>EVERY FACE, A DIFFERENT IDENTITY</p></header>
+  <div class="rune">❈ ✧ ❈</div>
+  <div class="look-switch" aria-label="Select identity">
+    <button id="pink" aria-pressed="true">✿ PINK IDENTITY</button>
+    <button id="blue" aria-pressed="false">✧ BLUE IDENTITY</button>
   </div>
-
-  <div class="frame" id="frame"></div>
-  <div class="scanline" id="scanline"></div>
-
-  <div class="sparkle s1">✧</div>
-  <div class="sparkle s2">✦</div>
-  <div class="sparkle s3">✧</div>
-
-  <div id="message">NEW IDENTITY</div>
-  <div class="flash" id="flash"></div>
-
-  <div class="bottom">
-    <p id="status">DISCOVER YOUR VIRTUAL SELF</p>
-
-    <label class="upload" for="upload">
-      UPLOAD CHARACTER
-    </label>
-
-    <input
-      type="file"
-      id="upload"
-      accept="image/*"
-    >
-
-    <button id="startBtn">START CAMERA</button>
-    <button id="transformBtn" disabled>TRANSFORM</button>
-    <button id="saveBtn">SAVE IMAGE</button>
-    <button id="resetBtn">TRY AGAIN</button>
+  <section class="stage" aria-label="Camera and transformation preview">
+    <div class="placeholder" id="placeholder"><div class="diamond">✧</div><p>DISCOVER YOUR VIRTUAL SELF</p></div>
+    <video autoplay muted playsinline id="camera"></video>
+    <img id="preview" alt="Your selfie before transformation"/>
+    <img id="result" alt="Your generated SHUSHU/TONG character"/>
+    <aside class="inventory" id="inventory" aria-hidden="true">
+      <img id="item1" alt="" src="/items/pink-1.jpg"/>
+      <img id="item2" alt="" src="/items/pink-2.jpg"/>
+      <img id="item3" alt="" src="/items/pink-3.jpg"/>
+      <img id="item4" alt="" src="/items/pink-4.jpg"/>
+    </aside>
+    <div class="scanline" id="scanline"></div><span class="star one">✧</span><span class="star two">✦</span>
+    <div class="status" id="status" role="status" aria-live="polite">READY TO ENTER THE GAME</div>
+  </section>
+  <div class="actions">
+    <button class="action" id="start">START CAMERA</button>
+    <button class="action primary" id="transform" disabled>✧ TRANSFORM ✧</button>
+    <button class="action" id="save" hidden>SAVE IMAGE</button>
+    <button class="action" id="reset" hidden>TRY AGAIN</button>
+    <label class="action" for="filePicker" id="fallback">UPLOAD SELFIE</label>
+    <input id="filePicker" type="file" accept="image/jpeg,image/png,image/webp" />
   </div>
-
-</div>
-
+  <div class="pass"><input id="passcode" type="password" autocomplete="off" placeholder="DEMO PASSCODE" aria-label="Demo passcode"/></div>
+  <div class="details"><label><input type="checkbox" id="consent"/> I consent to AI processing my selfie</label>
+  <p>Selfie is sent to the AI service only when you press TRANSFORM. Do not use other people's photos without permission.</p></div>
+  <p class="small" id="hint">Choose Pink or Blue, open camera, and transform.</p>
+</main>
 <script>
-const video = document.getElementById("camera");
-const canvas = document.getElementById("canvas");
-const result = document.getElementById("result");
-const statusText = document.getElementById("status");
-const scanline = document.getElementById("scanline");
-const flash = document.getElementById("flash");
-const message = document.getElementById("message");
-
-const startBtn = document.getElementById("startBtn");
-const transformBtn = document.getElementById("transformBtn");
-const saveBtn = document.getElementById("saveBtn");
-const resetBtn = document.getElementById("resetBtn");
-const upload = document.getElementById("upload");
-
-let characterImage = null;
-let stream = null;
-let transforming = false;
-
-startBtn.addEventListener("click", startCamera);
-transformBtn.addEventListener("click", transform);
-saveBtn.addEventListener("click", saveImage);
-resetBtn.addEventListener("click", reset);
-upload.addEventListener("change", uploadCharacter);
-
-async function startCamera() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: "user",
-        width: { ideal: 1280 },
-        height: { ideal: 1920 }
-      }
-    });
-
-    video.srcObject = stream;
-    await video.play();
-
-    startBtn.style.display = "none";
-    transformBtn.disabled = false;
-    statusText.textContent = "FACE YOUR CAMERA";
-
-  } catch (error) {
-    statusText.textContent =
-      "CAMERA ACCESS DENIED OR UNAVAILABLE";
-    console.error(error);
-  }
+const $=id=>document.getElementById(id);
+const video=$('camera'), preview=$('preview'),result=$('result'),status=$('status');
+let stream=null, look='pink', selfie=null, generating=false;
+function say(msg,error=false){status.textContent=msg;status.classList.toggle('error',error);}
+function show(view){for(const id of ['placeholder','camera','preview','result']) $(id).style.display=id===view?(id==='placeholder'?'grid':'block'):'none';$('inventory').style.display=view==='result'?'none':'grid';}
+function selectLook(value){if(generating)return;look=value;$('app').dataset.look=value;$('pink').setAttribute('aria-pressed',value==='pink');$('blue').setAttribute('aria-pressed',value==='blue');for(let i=1;i<=4;i++)$('item'+i).src='/items/'+value+'-'+i+'.jpg';say(value==='pink'?'PINK IDENTITY SELECTED':'BLUE IDENTITY SELECTED');}
+$('pink').onclick=()=>selectLook('pink');$('blue').onclick=()=>selectLook('blue');
+async function startCamera(){
+ if(generating)return;
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera requires a secure HTTPS website');
+  stopCamera();
+  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'user',width:{ideal:960},height:{ideal:1280}}});
+  video.srcObject=stream;await video.play();
+  selfie=null;show('camera');say('CAMERA READY — FACE THE SCREEN');
+  $('transform').disabled=false;$('start').textContent='RESTART CAMERA';
+ }catch(err){say('CAMERA NOT AVAILABLE — USE UPLOAD SELFIE',true);$('hint').textContent=err.message||String(err);}
 }
-
-function uploadCharacter(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    statusText.textContent = "PLEASE SELECT AN IMAGE";
-    return;
-  }
-
-  if (characterImage) {
-    URL.revokeObjectURL(characterImage);
-  }
-
-  characterImage = URL.createObjectURL(file);
-  statusText.textContent = "CHARACTER READY";
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}video.srcObject=null;}
+$('start').onclick=startCamera;
+function canvasImage(img,mirror){
+ const maxW=840,maxH=1260;
+ const iw=img.videoWidth||img.naturalWidth, ih=img.videoHeight||img.naturalHeight;
+ const ratio=Math.min(maxW/iw,maxH/ih,1);
+ const w=Math.max(1,Math.round(iw*ratio));
+ const h=Math.max(1,Math.round(ih*ratio));
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');
+ if(mirror){ctx.translate(w,0);ctx.scale(-1,1);}ctx.drawImage(img,0,0,w,h);
+ return canvas.toDataURL('image/jpeg',0.75);
 }
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function transform() {
-  if (transforming || !stream) return;
-
-  if (!characterImage) {
-    statusText.textContent = "UPLOAD CHARACTER FIRST";
-    return;
-  }
-
-  transforming = true;
-  transformBtn.disabled = true;
-
-  const width = video.videoWidth;
-  const height = video.videoHeight;
-
-  if (!width || !height) {
-    statusText.textContent = "CAMERA NOT READY";
-    transforming = false;
-    transformBtn.disabled = false;
-    return;
-  }
-
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d");
-
-  // Capture a mirrored selfie
-  ctx.save();
-  ctx.translate(width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0, width, height);
-  ctx.restore();
-
-  statusText.textContent = "SCANNING IDENTITY...";
-  scanline.style.display = "block";
-
-  await wait(1800);
-
-  statusText.textContent = "ENTERING VIRTUAL WORLD...";
-
-  await wait(1400);
-
-  scanline.style.display = "none";
-  flash.classList.add("active");
-
-  await wait(350);
-
-  result.src = characterImage;
-  result.style.display = "block";
-  video.style.display = "none";
-
-  message.classList.add("active");
-
-  statusText.textContent = "IDENTITY UNLOCKED";
-
-  transformBtn.style.display = "none";
-  saveBtn.style.display = "inline-block";
-  resetBtn.style.display = "inline-block";
-
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-
-  await wait(2000);
-  message.classList.remove("active");
-  flash.classList.remove("active");
-  transforming = false;
-}
-
-async function saveImage() {
-  if (!result.src || !characterImage) return;
-
-  try {
-    const image = new Image();
-
-    image.onload = () => {
-      const output = document.createElement("canvas");
-      output.width = image.naturalWidth;
-      output.height = image.naturalHeight;
-
-      output.getContext("2d").drawImage(
-        image, 0, 0
-      );
-
-      output.toBlob(blob => {
-        if (!blob) return;
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "SHUSHUTONG-IDENTITY.png";
-        link.click();
-
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }, "image/png");
-    };
-
-    image.src = characterImage;
-
-  } catch (error) {
-    statusText.textContent = "SAVE FAILED";
-    console.error(error);
-  }
-}
-
-async function reset() {
-  result.style.display = "none";
-  video.style.display = "block";
-
-  saveBtn.style.display = "none";
-  resetBtn.style.display = "none";
-  transformBtn.style.display = "inline-block";
-  transformBtn.disabled = true;
-
-  message.classList.remove("active");
-  scanline.style.display = "none";
-
-  statusText.textContent = "RESTARTING CAMERA";
-
-  await startCamera();
-}
+function readImage(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>resolve(canvasImage(img,false));img.onerror=()=>reject(new Error('Invalid image'));img.src=fr.result;};fr.onerror=()=>reject(fr.error);fr.readAsDataURL(file);});}
+$('filePicker').onchange=async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{if(file.size>12*1024*1024)throw new Error('Please use a photo under 12 MB');selfie=await readImage(file);stopCamera();preview.src=selfie;show('preview');$('transform').disabled=false;say('SELFIE READY TO TRANSFORM');}
+ catch(err){say(err.message,true);}
+};
+$('transform').onclick=async()=>{
+ if(generating)return;
+ if(!$('consent').checked){say('PLEASE CHECK THE CONSENT BOX',true);return;}
+ const passcode=$('passcode').value.trim();if(!passcode){say('ENTER THE DEMO PASSCODE',true);return;}
+ if(!selfie){if(!stream||!video.videoWidth){say('START CAMERA OR UPLOAD A SELFIE',true);return;}selfie=canvasImage(video,true);preview.src=selfie;stopCamera();show('preview');}
+ generating=true;$('transform').disabled=true;$('start').disabled=true;$('scanline').style.display='block';say('AI TRANSFORMATION IN PROGRESS...');
+ try{
+  if(location.hostname.endsWith('github.io'))throw new Error('Open the Vercel link, not GitHub Pages, for real AI transformation.');
+  const response=await fetch('/api/transform',{method:'POST',headers:{'Content-Type':'application/json','x-demo-passcode':passcode},body:JSON.stringify({photo:selfie,look})});
+  const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||`Server error ${response.status}`);
+  if(!data.image)throw new Error('No generated image returned');
+  result.src=data.image;await result.decode();show('result');say('YOUR NEW IDENTITY IS UNLOCKED');
+  $('save').hidden=false;$('reset').hidden=false;$('transform').hidden=true;$('start').hidden=true;$('fallback').hidden=true;
+ }catch(err){say('FAILED — '+err.message,true);$('transform').disabled=false;$('start').disabled=false;$('hint').textContent='You can retry after fixing the error.';}
+ finally{generating=false;$('scanline').style.display='none';}
+};
+$('save').onclick=()=>{if(!result.src)return;const a=document.createElement('a');a.href=result.src;a.download=`SHUSHUTONG-${look}-identity.jpg`;document.body.append(a);a.click();a.remove();};
+$('reset').onclick=()=>{
+ stopCamera();selfie=null;preview.removeAttribute('src');result.removeAttribute('src');show('placeholder');
+ $('save').hidden=true;$('reset').hidden=true;$('transform').hidden=false;$('start').hidden=false;$('fallback').hidden=false;
+ $('start').disabled=false;$('transform').disabled=true;$('start').textContent='START CAMERA';say('READY TO ENTER THE GAME');
+};
 </script>
-
 </body>
 </html>
