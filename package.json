@@ -1,8 +1,7 @@
 {
-  "name": "shushutong-identity-filter",
+  "name": "shushutong-identity-filter-v3",
   "private": true,
   "type": "module",
-  "version": "1.0.0",
-  "description": "Personalized SHUSHU/TONG AI character transformation demo",
+  "version": "3.0.0",
   "engines": { "node": ">=20" }
 }

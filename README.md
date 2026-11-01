@@ -1,41 +1,24 @@
-# SHUSHU/TONG | Identity Filter
+# SHUSHU/TONG AI Identity Filter V3
 
-This is a **real AI portrait transformation demo**, not a fake image-replacement filter.
+This version removes the clothing inventory and demo passcode. It sends a real selfie and the selected Pink or Blue fashion design reference to OpenAI's image editing API to generate a *new* virtual fashion character.
 
-- User chooses a Pink or Blue look (designer assets included under `public/references/`).
-- User captures a front-facing selfie or uploads **a selfie** (not a character image).
-- The Vercel backend sends the selfie and the selected design reference to the OpenAI Images Edit API.
-- The user's facial features are used to generate a new anime-game avatar with the style and outfit from the design.
-- User downloads the final image.
+## Upload to GitHub
 
-## Publish
+- Upload `api/transform.js`, `public/index.html`, `public/references/pink.jpg`, `public/references/blue.jpg`, `package.json`, `vercel.json` into the ROOT of the existing `liz` repository (folders stay nested).
+- You can leave an old root-level `index.html`; Vercel should serve `public/index.html` for this project structure. The old `/public/items/` pictures are no longer used.
+- Commit changes; connected Vercel project automatically redeploys.
 
-1. Upload the whole extracted project to your GitHub repository, replacing the old `index.html`.
-2. Visit https://vercel.com/new and import the GitHub repository (Framework Preset: Other; root directory: `./`).
-3. In Vercel project Settings → Environment Variables add:
-   - `OPENAI_API_KEY` — a *secret* OpenAI API key with sufficient image generation quota.
-   - `DEMO_PASSCODE` — your private demo code for visitors to enter in the UI.
-4. Deploy (or redeploy after changing environment variables) and open the Vercel HTTPS domain from your phone.
-5. Select Pink/Blue, start camera, grant camera permission, check consent, enter the demo code, tap TRANSFORM.
+## Critical: Enable real AI
 
-**IMPORTANT:** GitHub Pages can host the front end, but cannot run `api/transform.js`. The GitHub Pages URL will not generate AI images. You must open the **Vercel** URL.
+Open Vercel Dashboard → your project → Settings → Environment Variables.
+Add `OPENAI_API_KEY` with your real OpenAI API secret. Leave it in Vercel only; NEVER paste it into GitHub code, a screenshot or a chat.
+The obsolete `DEMO_PASSCODE` environment variable may be deleted.
+Then go to Deployments → latest deployment → Redeploy so the setting is used.
 
-## Costs & privacy
+API usage is billed separately from ChatGPT and may require billing/verification. If missing, the page will display `OPENAI_API_KEY is missing` and cannot transform, even if the selfie preview works.
 
-- GitHub repository and Vercel Hobby may be free within their eligibility and limits; **OpenAI API image generation is billed separately** and needs API credits / billing, and may require organization verification.
-- Never paste your API key in GitHub code, public README, or client HTML. Add the key only in Vercel Environment Variables.
-- The server does not explicitly save selfie files, but selfie and reference are transmitted to OpenAI for image processing.
-- `DEMO_PASSCODE` helps prevent casual misuse; it is *not* full production access control. For public launch, add authenticated accounts, user rate limits, quotas, and privacy policy.
-- Result is **one AI-generated image per transformation**, not continuous video/real-time motion tracking. Fidelity may vary per generation, especially if the selfie does not reveal full-body information.
+## Privacy and cost
 
-## Files
-
-- `index.html`: full mobile camera / UI / result download app.
-- `api/transform.js`: Vercel serverless AI image-edit request.
-- `public/references/pink.jpg`: provided Pink design reference (cropped screenshot).
-- `public/references/blue.jpg`: provided Blue design reference (cropped screenshot).
-- `vercel.json`: image generation function timeout and reference inclusion.
-
-## Development
-
-Use `vercel dev` with `OPENAI_API_KEY` and `DEMO_PASSCODE` configured in a local uncommitted `.env` file, or just deploy from GitHub.
+- Selfie is transmitted to the configured AI API when user taps Transform with the consent box checked.
+- Avoid sharing the public link widely: since the passcode is removed, anyone who can reach the public website can trigger paid image generation. Protect the deployment using Vercel access controls and configure API budget/usage alerts before public sharing.
+- One generated STILL image per attempt, not real-time 3D AR animation.

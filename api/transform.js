@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-// Vercel serverless function. No browser code can read the API key.
+// Never put your real OPENAI_API_KEY in this file. Configure it in Vercel Settings.
 const referenceFiles = {
   pink: new URL('../public/references/pink.jpg', import.meta.url),
   blue: new URL('../public/references/blue.jpg', import.meta.url),
@@ -8,77 +8,73 @@ const referenceFiles = {
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
-  if (!process.env.OPENAI_API_KEY || !process.env.DEMO_PASSCODE) {
-    return res.status(503).json({ error: 'Set OPENAI_API_KEY and DEMO_PASSCODE in Vercel environment variables.' });
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST is supported.' });
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({
+      error: 'OPENAI_API_KEY is missing. In Vercel: Project → Settings → Environment Variables → add OPENAI_API_KEY, then Redeploy.'
+    });
   }
-  // Demo-only protection. For public launch, add proper auth and rate limiting.
-  if (req.headers['x-demo-passcode'] !== process.env.DEMO_PASSCODE) {
-    return res.status(401).json({ error: 'Wrong demo passcode.' });
+
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { return res.status(400).json({ error: 'Invalid JSON request.' }); }
   }
-  const { photo, look } = req.body || {};
+  const { photo, look } = body || {};
   if (!['pink', 'blue'].includes(look) || typeof photo !== 'string' ||
       !/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(photo) || photo.length > 2300000) {
-    return res.status(400).json({ error: 'Invalid selfie or style. Please take another photo.' });
+    return res.status(400).json({ error: 'Invalid selfie. Please take or upload a smaller photo.' });
   }
-  const stylePrompt = look === 'pink' ? `
-IDENTITY: PINK BALLET REBELLION.
-Wardrobe from reference image 2: ivory-lace fitted corset with visible lace detailing,
-soft dusty-pink layered voluminous tutu miniskirt, distinctive black belt,
-black sleek high ponytail with long free-flowing hair, silver crossed necklaces,
-slouchy white leg warmers, metallic silver ballet-inspired heeled shoes.
-Scene: black-to-gold dreamy fashion game lighting, ornate champagne-gold glowing inventory
-frames on the RIGHT, stage pedestal, pale pink accessory previews, shimmering romantic mood.
-` : `
-IDENTITY: BLUE DAYDREAM.
-Wardrobe from reference image 2: pale powder-blue gingham halter top,
-asymmetric white ruffle peplum, tiered blue gingham ruffled miniskirt,
-long flowing dark hair with delicate silver star hair clip and earrings,
-shiny silver ballet flats with dainty blue ribbon ankle ties.
-Scene: icy periwinkle dreamy game world, silver pearly and white lace ornamentation,
-blue floating flowers and bows, dreamy silver-blue inventory cards on the RIGHT.
-`;
-  const prompt = `
-You are creating a personalized SHUSHU/TONG virtual identity transformation for a fashion campaign.
-There are exactly TWO reference images:
-IMAGE 1 = an actual camera selfie of the customer. THIS is the only source of identity.
-IMAGE 2 = the designer's approved SHUSHU/TONG game visual and clothing art direction.
-Generate one brand-new PORTRAIT 9:16-ish illustrated game avatar image.
 
-CRITICAL: Reimagine the person in IMAGE 1 as a stylized, premium, detailed 3D Japanese-anime fashion game character (not photoreal). Preserve the customer's unique and recognizable facial identity: eye shape, eyebrow placement, nose, mouth proportions, jawline, face shape, skin tone, and visible hair color. Keep them recognizable and do NOT copy the model face from IMAGE 2. Do not merely return or paste IMAGE 2. This must be a truly personalized fresh character of the customer in the specified costume and game styling.
+  const pink = look === 'pink';
+  const outfit = pink ? `PINK IDENTITY. Faithfully recreate the designer's ivory lace corset with intricate lace texture, voluminous dusty pink ballet ruffle skirt, black waist belt, sleek black high ponytail with long free-flowing hair, layered silver necklaces, off-white leg warmers, and metallic silver shoes. A dreamy gold-champagne illuminated stage, warm romantic theatrical lighting, sophisticated dark background.`
+  : `BLUE IDENTITY. Faithfully recreate the designer's powder-blue gingham halter top, diagonal white ruffle detail, tiered blue gingham ruffled mini skirt, long flowing dark hair, silver star hair ornament and earrings, silver ballet flats and pale blue ribbons. Icy pearly light, soft silver-blue ornamental fantasy fashion-game atmosphere.`;
 
-${stylePrompt}
+  const prompt = `Create a NEW SHUSHU/TONG fashion game identity portrait based on TWO images: IMAGE 1 = real visitor selfie, the ONLY reference for the visitor's facial identity and skin tone. IMAGE 2 = designer-approved fashion look and costume, ONLY reference for clothes and fantasy illustration style. Reimagine the individual from image 1 as a high-end Japanese-inspired 3D anime virtual character. Preserve their recognizable face shape, eyes, eyebrows, nose, lips, skin tone, and facial proportions as closely as possible in a stylized character; do not reuse the model face from image 2. Reproduce the silhouette, textiles, and accessories from image 2 carefully, with no unrelated wardrobe changes. ${outfit} Render ONE centered, large and visually striking fashion-game character on a beautiful ornate fantasy stage. Full-body or three-quarter fashion portrait with a sufficiently visible recognizable face. Fine hair strands, beautifully rendered fabrics, cinematic illumination, subtle glimmer. Vertical 2:3 composition. VERY IMPORTANT: NO right-hand clothing inventory, NO accessory panels, NO small tiles, NO mobile phone frame, NO phone bezel or notch, NO QR code, NO toolbars, NO watermarks, NO game stats. Make the entire image a clean, unified character portrait, not an interface screenshot. If brand text can be rendered legibly, use SHUSHU/TONG only. Do not copy the selfie photograph or simply show the designer image. Produce a newly generated personalized character. Adult fashion campaign, tasteful and non-sexual.`;
 
-IMAGE 2 is the precise visual guide for wardrobe, silhouette, style, fabric, layout, fantasy lighting and accessory inventory. Preserve its clothing details closely rather than inventing unrelated designs. Show the transformed customer as the main virtual model, from mid-thigh to full body, with face large enough to recognize. Add rich high-end fantasy wardrobe selection screen layout inspired by IMAGE 2, with a slim vertical right-side inventory of separate fashion items. The scene should be a cohesive actual game screenshot with opulent fashion campaign art direction, pearly illumination, high detail, refined fabric texture and lovely soft shadows.
-Avoid phone outline, phone bezel, notches, OS status bars, QR codes, watermarks, and logos of other brands. Show brand text only if clean and legible: SHUSHU/TONG. No TEKKEN or BRATZ references. Adult fashion avatar. Do not sexualize. Render a single completed polished vertical image.
-`;
   try {
-    const referenceBase64 = readFileSync(referenceFiles[look]).toString('base64');
+    const ref = readFileSync(referenceFiles[look]).toString('base64');
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 240000);
-    let apiResponse;
+    let response;
     try {
-      apiResponse = await fetch('https://api.openai.com/v1/images/edits', {
-        method: 'POST', signal: controller.signal,
-        headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      response = await fetch('https://api.openai.com/v1/images/edits', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           model: 'gpt-image-2.5-flare',
-          images: [ { image_url: photo }, { image_url: `data:image/jpeg;base64,${referenceBase64}` } ],
-          prompt, size: '1024x1536', quality: 'medium', output_format: 'jpeg', output_compression: 72, n: 1
+          images: [
+            { image_url: photo },
+            { image_url: `data:image/jpeg;base64,${ref}` }
+          ],
+          prompt,
+          size: '1024x1536',
+          quality: 'medium',
+          output_format: 'jpeg',
+          output_compression: 75,
+          n: 1,
         }),
       });
-    } finally { clearTimeout(timeout); }
-    const data = await apiResponse.json().catch(() => null);
-    if (!apiResponse.ok) {
-      const reason = data?.error?.message || `AI API error ${apiResponse.status}`;
-      console.error('Image transformation failed:', apiResponse.status, reason);
-      return res.status(502).json({ error: apiResponse.status === 429 ? 'AI rate limit or quota reached. Check API billing.' : reason.slice(0, 250) });
+    } finally {
+      clearTimeout(timeout);
     }
-    const b64 = data?.data?.[0]?.b64_json;
-    if (!b64) return res.status(502).json({ error: 'AI did not return an image.' });
-    return res.status(200).json({ image: `data:image/jpeg;base64,${b64}` });
-  } catch (err) {
-    console.error('Transformation exception:', err);
-    return res.status(500).json({ error: err.name === 'AbortError' ? 'AI generation timed out. Try again.' : 'Server error. Check Vercel function logs.' });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      const apiMessage = data?.error?.message || '';
+      console.error('OpenAI image API:', response.status, apiMessage);
+      if (response.status === 401) return res.status(502).json({ error: 'OpenAI API key invalid. Check OPENAI_API_KEY in Vercel.' });
+      if (response.status === 403) return res.status(502).json({ error: 'OpenAI API access denied. Check project permissions / image model access.' });
+      if (response.status === 429) return res.status(502).json({ error: 'OpenAI API quota or rate limit exceeded. Check billing and usage limits.' });
+      return res.status(502).json({ error: `AI generation failed (${response.status}): ${apiMessage.slice(0, 200) || 'Check Vercel function logs.'}` });
+    }
+    const image64 = data?.data?.[0]?.b64_json;
+    if (!image64) return res.status(502).json({ error: 'AI returned no image. Check Vercel function logs.' });
+    return res.status(200).json({ image: `data:image/jpeg;base64,${image64}` });
+  } catch (error) {
+    console.error('AI transformation error:', error);
+    return res.status(500).json({ error: error?.name === 'AbortError' ? 'AI image generation timed out. Try again.' : 'AI server error. Check Vercel function logs.' });
   }
 }

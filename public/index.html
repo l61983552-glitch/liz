@@ -1,140 +1,102 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#ddd9f4"/>
-<title>SHUSHU/TONG — IDENTITY FILTER</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#d9cbdf" />
+<title>SHUSHU/TONG — Your Other Identity</title>
 <style>
-:root{--ink:#58456c;--pale:#ebe6ff;--blue:#b5c6ff;--line:#fff9;--gold:#eee0b9}
-*{box-sizing:border-box}body{margin:0;background:#d3cce9;color:#fff;font-family:Georgia,'Times New Roman',serif}
-.app{position:relative;isolation:isolate;max-width:500px;margin:0 auto;min-height:100dvh;padding:24px 17px 22px;overflow:hidden;background:radial-gradient(ellipse at 65% 10%,#fff9,transparent 35%),linear-gradient(160deg,#9b9dc9,#dad5f2 35%,#adc1eb 73%,#777baa)}
-.app[data-look="pink"]{background:radial-gradient(ellipse at 65% 10%,#fff8,transparent 38%),linear-gradient(155deg,#bb9dba,#e6cbdc 38%,#c6adbe 75%,#746079)}
-.app::before{content:"";pointer-events:none;position:absolute;inset:12px;border:1px solid #fffe;border-radius:20px;box-shadow:inset 0 0 0 5px #fffc,inset 0 0 20px #fff8}
-.app::after{content:"✧ ✦ ✧";pointer-events:none;position:absolute;left:0;right:0;top:113px;text-align:center;font-size:23px;letter-spacing:100px;color:#ffef}
-.brand{text-align:center;position:relative;z-index:3;padding:10px 0 2px}.brand h1{margin:0;font:italic 900 clamp(25px,8vw,38px) Arial,Helvetica,sans-serif;letter-spacing:-2.5px;color:#da2138;text-shadow:0 1px #fff,1px 2px #f4c2c9}
-.brand p{margin:5px 0 0;font:10px Georgia,serif;letter-spacing:3px;color:#fff;text-shadow:0 1px 5px #575381}
-.rune{text-align:center;color:#fff;font-size:22px;margin:7px 0 2px;text-shadow:0 0 7px white}
-.look-switch{display:flex;gap:12px;justify-content:center;position:relative;z-index:2;margin:8px auto 12px}.look-switch button{border:1px solid #fff;box-shadow:0 2px 11px #47406d4a,inset 0 0 12px #fff7;border-radius:30px;color:#544e74;background:#fffc;padding:9px 19px;font-family:Georgia;letter-spacing:1px}.look-switch button[aria-pressed="true"]{color:#fff;background:#7e709f}
-.stage{position:relative;z-index:1;width:100%;aspect-ratio:10/15.5;min-height:360px;max-height:66dvh;background:#c3bcd188;border:7px double #fffbe5;border-radius:47% 47% 14% 14% / 11% 11% 5% 5%;overflow:hidden;box-shadow:0 15px 45px #58506b77,inset 0 0 28px #fff9}
-.stage::before{content:"";position:absolute;z-index:2;inset:8px;border:1px solid #ffeccd96;border-radius:inherit;pointer-events:none}
-#camera,#preview,#result{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;display:none}
+:root{--ink:#685176;--white:#fffc;--shadow:#68547675}
+*{box-sizing:border-box}
+html{background:#d7d0e8}
+body{margin:0;color:white;font-family:Georgia,'Times New Roman',serif}
+.app{position:relative;min-height:100dvh;max-width:510px;margin:auto;padding:calc(24px + env(safe-area-inset-top)) 17px calc(30px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 20% 10%,#fff9,transparent 35%),linear-gradient(153deg,#bca9cf 5%,#edcbd7 42%,#aaa1c7 100%);overflow:hidden;isolation:isolate}
+.app[data-look="blue"]{background:radial-gradient(ellipse at 20% 10%,#fff9,transparent 35%),linear-gradient(155deg,#9db2d4 5%,#d7e2fb 42%,#aaa6d5 100%)}
+.app:before{content:"";position:absolute;inset:11px;border:1px solid #fffa;border-radius:20px;box-shadow:inset 0 0 0 5px #ffffff60;pointer-events:none}
+.brand,.look-switch,.actions,.note,.message{position:relative;z-index:2}
+.brand{text-align:center;margin-bottom:16px}
+.brand h1{margin:0;font:italic 900 clamp(28px,8.5vw,41px) Arial,sans-serif;letter-spacing:-2px;color:#df1938;text-shadow:1px 1px #fff}
+.brand p{font-size:10px;letter-spacing:2.6px;margin:8px 0 0;text-shadow:0 1px 4px #7b6184}
+.ornament{text-align:center;color:white;font-size:19px;letter-spacing:17px;margin:15px 0;text-shadow:0 0 10px white}
+.look-switch{display:flex;justify-content:center;gap:10px;margin:0 0 16px}
+.look-switch button,.action{font:12px Georgia,serif;letter-spacing:.7px;border:1px solid #fff9;border-radius:30px;padding:12px 16px;color:var(--ink);background:#fffc;box-shadow:0 3px 14px var(--shadow);cursor:pointer}
+.look-switch button{font-size:11px;flex:1;max-width:180px}
+.look-switch button[aria-pressed=true]{background:#837296;color:white}
+.app[data-look="blue"] .look-switch button[aria-pressed=true]{background:#7898bc}
+.stage{position:relative;z-index:1;width:100%;height:min(64dvh,650px);min-height:330px;overflow:hidden;border:7px double #fffde8;border-radius:45% 45% 10% 10%/11% 11% 5% 5%;background:radial-gradient(ellipse at 50% 50%,#e3e2f8,#9d91ba);box-shadow:0 15px 36px #5b506d77,inset 0 0 24px #fff8}
+.stage:after{content:"";position:absolute;inset:8px;border:1px solid #ffeacd90;border-radius:inherit;pointer-events:none;z-index:4}
+#camera,#preview,#result{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 #camera{transform:scaleX(-1)}
-.placeholder{height:100%;display:grid;place-content:center;text-align:center;background:radial-gradient(ellipse at center,#e8ecff,#949cbf);color:#fff;text-shadow:0 1px 8px #484973}
-.placeholder .diamond{font-size:66px;animation:pulse 2.4s ease-in-out infinite}.placeholder p{font-size:11px;letter-spacing:2px;margin-top:0}
-@keyframes pulse{50%{opacity:.5;transform:scale(1.15)}}
-.scanline{display:none;position:absolute;z-index:6;left:5%;width:90%;height:3px;background:#fff;box-shadow:0 0 19px 7px #b0daff;animation:scan 2.3s linear infinite}
-@keyframes scan{0%{top:12%}50%{top:83%}100%{top:12%}}
-.inventory{position:absolute;z-index:4;right:2%;top:24%;width:23%;display:grid;gap:5px;pointer-events:none}
-.inventory img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px;border:2px ridge #ffebd0;box-shadow:0 0 6px #fff,inset 0 0 5px #fff;background:#f5dcf0aa}
-.star{position:absolute;z-index:3;color:white;font-size:24px;text-shadow:0 0 8px white;pointer-events:none}.star.one{top:16%;left:5%}.star.two{bottom:12%;right:6%}
-.status{position:absolute;z-index:5;bottom:14px;left:10%;width:80%;padding:9px 10px;text-align:center;font-size:10px;letter-spacing:2px;color:#fff;background:#5951788f;border:1px solid #fff8;border-radius:20px;text-shadow:0 1px 3px #333}
-.actions{position:relative;z-index:3;text-align:center;margin-top:13px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px}
-.action{border:1px solid #fff9;box-shadow:0 3px 12px #66587955,inset 0 0 10px #fff5;border-radius:25px;padding:12px 16px;font-size:11px;letter-spacing:1.3px;color:#645674;background:#fffdf8ee;font-family:Georgia,serif;cursor:pointer}
-.action.primary{background:linear-gradient(130deg,#f3e3ff,#e1d9ff);font-weight:bold;color:#674271}.action:disabled{opacity:.4;cursor:not-allowed}
-.details{position:relative;z-index:3;margin-top:14px;text-align:center;font:12px/1.5 Arial,sans-serif;color:#fff}.details label{display:inline-flex;align-items:center;gap:7px}.details input{accent-color:#7965b3}
-.details p{margin:7px auto 0;max-width:360px;opacity:.9;font-size:10px}
-.pass{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;margin:10px auto 0}.pass input{max-width:220px;width:64%;padding:9px 13px;border:1px solid #fff9;border-radius:20px;background:#fffe;color:#625377;text-align:center;font:12px Arial;outline:none}
-.small{font:11px Arial,sans-serif;color:#fffd;position:relative;z-index:3;text-align:center;margin:9px 0}
-#filePicker{display:none}.error{color:#fff0ee;text-shadow:0 1px 3px #8b1f37}
+.placeholder{position:absolute;inset:0;display:grid;place-content:center;text-align:center;text-shadow:0 0 10px #64577b}
+.placeholder .gem{font-size:75px;line-height:1.5;animation:glow 2s ease-in-out infinite alternate}
+.placeholder p{font-size:11px;letter-spacing:2px}
+@keyframes glow{to{filter:drop-shadow(0 0 13px white);transform:scale(1.15)}}
+.star{position:absolute;z-index:5;text-shadow:0 0 15px white;pointer-events:none}.star.a{top:14%;left:7%;font-size:26px}.star.b{right:7%;top:44%;font-size:24px}.star.c{left:11%;bottom:19%;font-size:18px}
+.scanline{display:none;position:absolute;z-index:5;left:4%;width:92%;height:3px;background:white;box-shadow:0 0 15px 6px #b3ddff;animation:scan 2.4s linear infinite}
+@keyframes scan{0%,100%{top:15%}50%{top:83%}}
+.status{position:absolute;z-index:6;left:8%;bottom:17px;width:84%;padding:10px 12px;text-align:center;font-size:11px;line-height:1.4;letter-spacing:1px;background:#594966b8;border:1px solid #fffa;border-radius:18px;overflow-wrap:anywhere}
+.status.error{background:#74364dcf}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 9px}
+.action{font-size:11px;padding:13px 15px}.action.primary{background:#f4e1ff;color:#735081;font-weight:bold}.action:disabled{opacity:.55;cursor:wait}
+#filePicker{display:none}
+.note{text-align:center;font:11px/1.5 Arial,sans-serif;color:#fff;max-width:380px;margin:8px auto}
+.note label{display:inline-flex;gap:7px;align-items:center}.note input{accent-color:#8b68ac}
+.message{text-align:center;font:12px/1.5 Georgia,serif;color:#fff;margin:9px auto;min-height:18px}
 [hidden]{display:none!important}
-@media(min-height:900px){.app{padding-top:34px}.stage{max-height:67dvh}}
+@media(min-width:650px){.stage{height:590px}}
 </style>
 </head>
 <body>
 <main class="app" id="app" data-look="pink">
   <header class="brand"><h1>SHUSHU/TONG</h1><p>EVERY FACE, A DIFFERENT IDENTITY</p></header>
-  <div class="rune">❈ ✧ ❈</div>
-  <div class="look-switch" aria-label="Select identity">
+  <div class="ornament">✧ ❈ ✧</div>
+  <nav class="look-switch" aria-label="Choose identity">
     <button id="pink" aria-pressed="true">✿ PINK IDENTITY</button>
     <button id="blue" aria-pressed="false">✧ BLUE IDENTITY</button>
-  </div>
-  <section class="stage" aria-label="Camera and transformation preview">
-    <div class="placeholder" id="placeholder"><div class="diamond">✧</div><p>DISCOVER YOUR VIRTUAL SELF</p></div>
-    <video autoplay muted playsinline id="camera"></video>
-    <img id="preview" alt="Your selfie before transformation"/>
-    <img id="result" alt="Your generated SHUSHU/TONG character"/>
-    <aside class="inventory" id="inventory" aria-hidden="true">
-      <img id="item1" alt="" src="/items/pink-1.jpg"/>
-      <img id="item2" alt="" src="/items/pink-2.jpg"/>
-      <img id="item3" alt="" src="/items/pink-3.jpg"/>
-      <img id="item4" alt="" src="/items/pink-4.jpg"/>
-    </aside>
-    <div class="scanline" id="scanline"></div><span class="star one">✧</span><span class="star two">✦</span>
+  </nav>
+  <section class="stage" aria-label="Camera and AI transformation">
+    <div class="placeholder" id="placeholder"><span class="gem">✧</span><p>DISCOVER YOUR VIRTUAL SELF</p></div>
+    <video id="camera" autoplay playsinline muted></video>
+    <img id="preview" alt="Selfie preview" />
+    <img id="result" alt="AI-generated SHUSHU/TONG character" />
+    <span class="star a">✧</span><span class="star b">✦</span><span class="star c">✧</span>
+    <div class="scanline" id="scanline"></div>
     <div class="status" id="status" role="status" aria-live="polite">READY TO ENTER THE GAME</div>
   </section>
   <div class="actions">
     <button class="action" id="start">START CAMERA</button>
     <button class="action primary" id="transform" disabled>✧ TRANSFORM ✧</button>
+    <label class="action" id="fallback" for="filePicker">UPLOAD SELFIE</label>
+    <input id="filePicker" type="file" accept="image/jpeg,image/png,image/webp" />
     <button class="action" id="save" hidden>SAVE IMAGE</button>
     <button class="action" id="reset" hidden>TRY AGAIN</button>
-    <label class="action" for="filePicker" id="fallback">UPLOAD SELFIE</label>
-    <input id="filePicker" type="file" accept="image/jpeg,image/png,image/webp" />
   </div>
-  <div class="pass"><input id="passcode" type="password" autocomplete="off" placeholder="DEMO PASSCODE" aria-label="Demo passcode"/></div>
-  <div class="details"><label><input type="checkbox" id="consent"/> I consent to AI processing my selfie</label>
-  <p>Selfie is sent to the AI service only when you press TRANSFORM. Do not use other people's photos without permission.</p></div>
-  <p class="small" id="hint">Choose Pink or Blue, open camera, and transform.</p>
+  <div class="note"><label><input type="checkbox" id="consent" /> I agree to send my selfie to AI for this transformation</label></div>
+  <p class="note">A photo is sent to the AI service only when you tap TRANSFORM. Use your own photo or one you have permission to use.</p>
+  <p class="message" id="hint">Choose a look, open the camera or upload a selfie.</p>
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const video=$('camera'), preview=$('preview'),result=$('result'),status=$('status');
-let stream=null, look='pink', selfie=null, generating=false;
-function say(msg,error=false){status.textContent=msg;status.classList.toggle('error',error);}
-function show(view){for(const id of ['placeholder','camera','preview','result']) $(id).style.display=id===view?(id==='placeholder'?'grid':'block'):'none';$('inventory').style.display=view==='result'?'none':'grid';}
-function selectLook(value){if(generating)return;look=value;$('app').dataset.look=value;$('pink').setAttribute('aria-pressed',value==='pink');$('blue').setAttribute('aria-pressed',value==='blue');for(let i=1;i<=4;i++)$('item'+i).src='/items/'+value+'-'+i+'.jpg';say(value==='pink'?'PINK IDENTITY SELECTED':'BLUE IDENTITY SELECTED');}
-$('pink').onclick=()=>selectLook('pink');$('blue').onclick=()=>selectLook('blue');
-async function startCamera(){
- if(generating)return;
- try{
-  if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera requires a secure HTTPS website');
-  stopCamera();
-  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'user',width:{ideal:960},height:{ideal:1280}}});
-  video.srcObject=stream;await video.play();
-  selfie=null;show('camera');say('CAMERA READY — FACE THE SCREEN');
-  $('transform').disabled=false;$('start').textContent='RESTART CAMERA';
- }catch(err){say('CAMERA NOT AVAILABLE — USE UPLOAD SELFIE',true);$('hint').textContent=err.message||String(err);}
-}
+const video=$('camera'),preview=$('preview'),result=$('result');
+let stream=null,look='pink',selfie=null,busy=false;
+function say(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error);}
+function show(which){for(const id of ['placeholder','camera','preview','result'])$(id).style.display=id===which?(id==='placeholder'?'grid':'block'):'none';}
 function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}video.srcObject=null;}
+function choose(value){if(busy)return;look=value;$('app').dataset.look=value;for(const l of ['pink','blue'])$(l).setAttribute('aria-pressed',String(l===value));say(`${value.toUpperCase()} IDENTITY SELECTED`);}
+$('pink').onclick=()=>choose('pink');$('blue').onclick=()=>choose('blue');
+async function startCamera(){if(busy)return;try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera needs HTTPS and browser permission');stopCamera();stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:960},height:{ideal:1280}},audio:false});video.srcObject=stream;await video.play();selfie=null;show('camera');$('transform').disabled=false;$('start').textContent='RESTART CAMERA';say('FACE YOUR CAMERA — READY');}
+catch(e){say('CAMERA UNAVAILABLE — UPLOAD SELFIE INSTEAD',true);$('hint').textContent=e.message;}}
 $('start').onclick=startCamera;
-function canvasImage(img,mirror){
- const maxW=840,maxH=1260;
- const iw=img.videoWidth||img.naturalWidth, ih=img.videoHeight||img.naturalHeight;
- const ratio=Math.min(maxW/iw,maxH/ih,1);
- const w=Math.max(1,Math.round(iw*ratio));
- const h=Math.max(1,Math.round(ih*ratio));
- const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');
- if(mirror){ctx.translate(w,0);ctx.scale(-1,1);}ctx.drawImage(img,0,0,w,h);
- return canvas.toDataURL('image/jpeg',0.75);
-}
-function readImage(file){return new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>resolve(canvasImage(img,false));img.onerror=()=>reject(new Error('Invalid image'));img.src=fr.result;};fr.onerror=()=>reject(fr.error);fr.readAsDataURL(file);});}
-$('filePicker').onchange=async e=>{
- const file=e.target.files?.[0];if(!file)return;
- try{if(file.size>12*1024*1024)throw new Error('Please use a photo under 12 MB');selfie=await readImage(file);stopCamera();preview.src=selfie;show('preview');$('transform').disabled=false;say('SELFIE READY TO TRANSFORM');}
- catch(err){say(err.message,true);}
-};
-$('transform').onclick=async()=>{
- if(generating)return;
- if(!$('consent').checked){say('PLEASE CHECK THE CONSENT BOX',true);return;}
- const passcode=$('passcode').value.trim();if(!passcode){say('ENTER THE DEMO PASSCODE',true);return;}
- if(!selfie){if(!stream||!video.videoWidth){say('START CAMERA OR UPLOAD A SELFIE',true);return;}selfie=canvasImage(video,true);preview.src=selfie;stopCamera();show('preview');}
- generating=true;$('transform').disabled=true;$('start').disabled=true;$('scanline').style.display='block';say('AI TRANSFORMATION IN PROGRESS...');
- try{
-  if(location.hostname.endsWith('github.io'))throw new Error('Open the Vercel link, not GitHub Pages, for real AI transformation.');
-  const response=await fetch('/api/transform',{method:'POST',headers:{'Content-Type':'application/json','x-demo-passcode':passcode},body:JSON.stringify({photo:selfie,look})});
-  const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||`Server error ${response.status}`);
-  if(!data.image)throw new Error('No generated image returned');
-  result.src=data.image;await result.decode();show('result');say('YOUR NEW IDENTITY IS UNLOCKED');
-  $('save').hidden=false;$('reset').hidden=false;$('transform').hidden=true;$('start').hidden=true;$('fallback').hidden=true;
- }catch(err){say('FAILED — '+err.message,true);$('transform').disabled=false;$('start').disabled=false;$('hint').textContent='You can retry after fixing the error.';}
- finally{generating=false;$('scanline').style.display='none';}
-};
+function jpegFrom(source,mirror=false){const iw=source.videoWidth||source.naturalWidth,ih=source.videoHeight||source.naturalHeight;if(!iw||!ih)throw new Error('Photo is not ready');const factor=Math.min(840/iw,1260/ih,1),w=Math.max(1,Math.round(iw*factor)),h=Math.max(1,Math.round(ih*factor));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');if(mirror){ctx.translate(w,0);ctx.scale(-1,1);}ctx.drawImage(source,0,0,w,h);return c.toDataURL('image/jpeg',.72);}
+function loadPhoto(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{try{resolve(jpegFrom(img));}catch(e){reject(e);}};img.onerror=()=>reject(new Error('Cannot read this image'));img.src=reader.result;};reader.onerror=()=>reject(new Error('Cannot read this file'));reader.readAsDataURL(file);});}
+$('filePicker').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(!file.type.startsWith('image/'))throw new Error('Select a photo');if(file.size>12*1024*1024)throw new Error('Upload a photo smaller than 12 MB');selfie=await loadPhoto(file);stopCamera();preview.src=selfie;show('preview');$('transform').disabled=false;say('SELFIE READY — PRESS TRANSFORM');}catch(err){say(err.message,true);}};
+$('transform').onclick=async()=>{if(busy)return;if(!$('consent').checked){say('PLEASE TICK THE CONSENT CHECKBOX',true);return;}try{if(!selfie){if(!stream||!video.videoWidth)throw new Error('START CAMERA OR UPLOAD SELFIE');selfie=jpegFrom(video,true);preview.src=selfie;stopCamera();show('preview');}if(location.hostname.endsWith('github.io'))throw new Error('Use the Vercel link, not GitHub Pages');
+busy=true;$('transform').disabled=true;$('start').disabled=true;$('scanline').style.display='block';say('AI IS CREATING YOUR VIRTUAL IDENTITY...');$('hint').textContent='This can take a little time. Do not close the page.';
+const response=await fetch('/api/transform',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({photo:selfie,look})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||`Server error ${response.status}`);if(!data.image)throw new Error('AI returned no image');result.src=data.image;await result.decode();show('result');say('YOUR NEW IDENTITY IS UNLOCKED');$('start').hidden=true;$('transform').hidden=true;$('fallback').hidden=true;$('save').hidden=false;$('reset').hidden=false;$('hint').textContent='Save your SHUSHU/TONG virtual identity.';
+}catch(e){say(`FAILED — ${e.message}`,true);$('hint').textContent='Check the error above, then try again.';}finally{busy=false;$('transform').disabled=false;$('start').disabled=false;$('scanline').style.display='none';}};
 $('save').onclick=()=>{if(!result.src)return;const a=document.createElement('a');a.href=result.src;a.download=`SHUSHUTONG-${look}-identity.jpg`;document.body.append(a);a.click();a.remove();};
-$('reset').onclick=()=>{
- stopCamera();selfie=null;preview.removeAttribute('src');result.removeAttribute('src');show('placeholder');
- $('save').hidden=true;$('reset').hidden=true;$('transform').hidden=false;$('start').hidden=false;$('fallback').hidden=false;
- $('start').disabled=false;$('transform').disabled=true;$('start').textContent='START CAMERA';say('READY TO ENTER THE GAME');
-};
+$('reset').onclick=()=>{stopCamera();selfie=null;preview.removeAttribute('src');result.removeAttribute('src');show('placeholder');$('start').hidden=false;$('transform').hidden=false;$('fallback').hidden=false;$('save').hidden=true;$('reset').hidden=true;$('start').disabled=false;$('transform').disabled=true;$('start').textContent='START CAMERA';say('READY TO ENTER THE GAME');$('hint').textContent='Choose a look, open the camera or upload a selfie.';};
+show('placeholder');
 </script>
 </body>
 </html>
